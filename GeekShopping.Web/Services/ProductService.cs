@@ -11,7 +11,7 @@ namespace GeekShopping.Web.Services
 
         public ProductService(HttpClient? client)
         {
-            _client = client;
+            _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
         public async Task<IEnumerable<ProductModel>> FindAllProducts()
