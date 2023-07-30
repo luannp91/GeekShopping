@@ -12,11 +12,9 @@ namespace GeekShopping.Web.Controllers
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
         }
 
-#pragma warning disable CS1998 // O método assíncrono não possui operadores 'await' e será executado de forma síncrona
         public async Task<IActionResult> ProductIndex()
-#pragma warning restore CS1998 // O método assíncrono não possui operadores 'await' e será executado de forma síncrona
         {
-            var products = _productService!.FindAllProducts();
+            var products = await _productService!.FindAllProducts();
             return View(products);
         }
     }
