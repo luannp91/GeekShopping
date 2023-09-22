@@ -4,6 +4,7 @@ using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Validation;
 using IdentityModel;
+using IdentityServerHost.Quickstart.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -18,7 +19,9 @@ public class Index : PageModel
     private readonly IEventService _events;
     private readonly ILogger<Index> _logger;
 
+#pragma warning disable CS8618 // O campo não anulável precisa conter um valor não nulo ao sair do construtor. Considere declará-lo como anulável.
     public Index(
+#pragma warning restore CS8618 // O campo não anulável precisa conter um valor não nulo ao sair do construtor. Considere declará-lo como anulável.
         IIdentityServerInteractionService interaction,
         IEventService events,
         ILogger<Index> logger)
@@ -55,7 +58,7 @@ public class Index : PageModel
         var request = await _interaction.GetAuthorizationContextAsync(Input.ReturnUrl);
         if (request == null) return RedirectToPage("/Home/Error/Index");
 
-        ConsentResponse grantedConsent = null;
+        ConsentResponse? grantedConsent = null;
 
         // user clicked 'no' - send back the standard 'access_denied' response
         if (Input?.Button == "no")
@@ -107,35 +110,51 @@ public class Index : PageModel
             {
                 // The client is native, so this change in how to
                 // return the response is for better UX for the end user.
+#pragma warning disable CS8602 // Desreferência de uma referência possivelmente nula.
                 return this.LoadingPage(Input.ReturnUrl);
+#pragma warning restore CS8602 // Desreferência de uma referência possivelmente nula.
             }
 
+#pragma warning disable CS8602 // Desreferência de uma referência possivelmente nula.
             return Redirect(Input.ReturnUrl);
+#pragma warning restore CS8602 // Desreferência de uma referência possivelmente nula.
         }
 
         // we need to redisplay the consent UI
+#pragma warning disable CS8602 // Desreferência de uma referência possivelmente nula.
         View = await BuildViewModelAsync(Input.ReturnUrl, Input);
+#pragma warning restore CS8602 // Desreferência de uma referência possivelmente nula.
         return Page();
     }
 
-    private async Task<ViewModel> BuildViewModelAsync(string returnUrl, InputModel model = null)
+    private IActionResult LoadingPage(string returnUrl)
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task<ViewModel> BuildViewModelAsync(string returnUrl, InputModel? model = null)
     {
         var request = await _interaction.GetAuthorizationContextAsync(returnUrl);
         if (request != null)
         {
+#pragma warning disable CS8604 // Possível argumento de referência nula.
             return CreateConsentViewModel(model, returnUrl, request);
+#pragma warning restore CS8604 // Possível argumento de referência nula.
         }
         else
         {
             _logger.LogError("No consent request matching request: {0}", returnUrl);
         }
+#pragma warning disable CS8603 // Possível retorno de referência nula.
         return null;
+#pragma warning restore CS8603 // Possível retorno de referência nula.
     }
 
     private ViewModel CreateConsentViewModel(
         InputModel model, string returnUrl,
         AuthorizationRequest request)
     {
+#pragma warning disable CS8601 // Possível atribuição de referência nula.
         var vm = new ViewModel
         {
             ClientName = request.Client.ClientName ?? request.Client.ClientId,
@@ -143,6 +162,7 @@ public class Index : PageModel
             ClientLogoUrl = request.Client.LogoUri,
             AllowRememberConsent = request.Client.AllowRememberConsent
         };
+#pragma warning restore CS8601 // Possível atribuição de referência nula.
 
         vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources
             .Select(x => CreateScopeViewModel(x, model?.ScopesConsented == null || model.ScopesConsented?.Contains(x.Name) == true))
@@ -178,6 +198,7 @@ public class Index : PageModel
 
     private ScopeViewModel CreateScopeViewModel(IdentityResource identity, bool check)
     {
+#pragma warning disable CS8601 // Possível atribuição de referência nula.
         return new ScopeViewModel
         {
             Name = identity.Name,
@@ -188,6 +209,7 @@ public class Index : PageModel
             Required = identity.Required,
             Checked = check || identity.Required
         };
+#pragma warning restore CS8601 // Possível atribuição de referência nula.
     }
 
     public ScopeViewModel CreateScopeViewModel(ParsedScopeValue parsedScopeValue, ApiScope apiScope, bool check)
@@ -198,6 +220,7 @@ public class Index : PageModel
             displayName += ":" + parsedScopeValue.ParsedParameter;
         }
 
+#pragma warning disable CS8601 // Possível atribuição de referência nula.
         return new ScopeViewModel
         {
             Name = parsedScopeValue.ParsedName,
@@ -208,6 +231,7 @@ public class Index : PageModel
             Required = apiScope.Required,
             Checked = check || apiScope.Required
         };
+#pragma warning restore CS8601 // Possível atribuição de referência nula.
     }
 
     private ScopeViewModel GetOfflineAccessScope(bool check)

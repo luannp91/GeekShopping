@@ -4,6 +4,7 @@ using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using Duende.IdentityServer.Test;
+using IdentityServerHost.Quickstart.UI;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,12 @@ public class Index : PageModel
 
     [BindProperty]
     public InputModel Input { get; set; }
-        
+
+#pragma warning disable CS8618 // O campo não anulável precisa conter um valor não nulo ao sair do construtor. Considere declará-lo como anulável.
     public Index(
+#pragma warning restore CS8618 // O campo não anulável precisa conter um valor não nulo ao sair do construtor. Considere declará-lo como anulável.
         IIdentityServerInteractionService interaction,
-        TestUserStore users = null)
+        TestUserStore? users = null)
     {
         // this is where you would plug in your own custom identity management library (e.g. ASP.NET Identity)
         _users = users ?? throw new Exception("Please call 'AddTestUsers(TestUsers.Users)' on the IIdentityServerBuilder in Startup or remove the TestUserStore from the AccountController.");
@@ -116,5 +119,10 @@ public class Index : PageModel
         }
 
         return Page();
+    }
+
+    private IActionResult LoadingPage(string returnUrl)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -4,6 +4,7 @@ using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using Duende.IdentityServer.Test;
+using IdentityServerHost.Quickstart.UI;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,13 +26,15 @@ public class Index : PageModel
         
     [BindProperty]
     public InputModel Input { get; set; }
-        
+
+#pragma warning disable CS8618 // O campo não anulável precisa conter um valor não nulo ao sair do construtor. Considere declará-lo como anulável.
     public Index(
+#pragma warning restore CS8618 // O campo não anulável precisa conter um valor não nulo ao sair do construtor. Considere declará-lo como anulável.
         IIdentityServerInteractionService interaction,
         IAuthenticationSchemeProvider schemeProvider,
         IIdentityProviderStore identityProviderStore,
         IEventService events,
-        TestUserStore users = null)
+        TestUserStore? users = null)
     {
         // this is where you would plug in your own custom identity management library (e.g. ASP.NET Identity)
         _users = users ?? throw new Exception("Please call 'AddTestUsers(TestUsers.Users)' on the IIdentityServerBuilder in Startup or remove the TestUserStore from the AccountController.");
@@ -97,7 +100,7 @@ public class Index : PageModel
 
                 // only set explicit expiration here if user chooses "remember me". 
                 // otherwise we rely upon expiration configured in cookie middleware.
-                AuthenticationProperties props = null;
+                AuthenticationProperties? props = null;
                 if (LoginOptions.AllowRememberLogin && Input.RememberLogin)
                 {
                     props = new AuthenticationProperties
@@ -152,7 +155,12 @@ public class Index : PageModel
         await BuildModelAsync(Input.ReturnUrl);
         return Page();
     }
-        
+
+    private IActionResult LoadingPage(string returnUrl)
+    {
+        throw new NotImplementedException();
+    }
+
     private async Task BuildModelAsync(string returnUrl)
     {
         Input = new InputModel
@@ -171,11 +179,15 @@ public class Index : PageModel
                 EnableLocalLogin = local,
             };
 
+#pragma warning disable CS8601 // Possível atribuição de referência nula.
             Input.Username = context?.LoginHint;
+#pragma warning restore CS8601 // Possível atribuição de referência nula.
 
             if (!local)
             {
+#pragma warning disable CS8602 // Desreferência de uma referência possivelmente nula.
                 View.ExternalProviders = new[] { new ViewModel.ExternalProvider { AuthenticationScheme = context.IdP } };
+#pragma warning restore CS8602 // Desreferência de uma referência possivelmente nula.
             }
 
             return;
@@ -191,6 +203,7 @@ public class Index : PageModel
                 AuthenticationScheme = x.Name
             }).ToList();
 
+#pragma warning disable CS8601 // Possível atribuição de referência nula.
         var dyanmicSchemes = (await _identityProviderStore.GetAllSchemeNamesAsync())
             .Where(x => x.Enabled)
             .Select(x => new ViewModel.ExternalProvider
@@ -198,6 +211,7 @@ public class Index : PageModel
                 AuthenticationScheme = x.Scheme,
                 DisplayName = x.DisplayName
             });
+#pragma warning restore CS8601 // Possível atribuição de referência nula.
         providers.AddRange(dyanmicSchemes);
 
 

@@ -3,6 +3,7 @@ using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
+using IdentityServerHost.Quickstart.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -18,7 +19,9 @@ public class Index : PageModel
     private readonly IResourceStore _resources;
     private readonly IEventService _events;
 
+#pragma warning disable CS8618 // O campo não anulável precisa conter um valor não nulo ao sair do construtor. Considere declará-lo como anulável.
     public Index(IIdentityServerInteractionService interaction,
+#pragma warning restore CS8618 // O campo não anulável precisa conter um valor não nulo ao sair do construtor. Considere declará-lo como anulável.
         IClientStore clients,
         IResourceStore resources,
         IEventService events)
@@ -29,7 +32,7 @@ public class Index : PageModel
         _events = events;
     }
 
-    public ViewModel View { get; set; }
+    public ViewModel? View { get; set; }
         
     public async Task OnGet()
     {
@@ -43,6 +46,7 @@ public class Index : PageModel
             {
                 var resources = await _resources.FindResourcesByScopeAsync(grant.Scopes);
 
+#pragma warning disable CS8601 // Possível atribuição de referência nula.
                 var item = new GrantViewModel()
                 {
                     ClientId = client.ClientId,
@@ -55,6 +59,7 @@ public class Index : PageModel
                     IdentityGrantNames = resources.IdentityResources.Select(x => x.DisplayName ?? x.Name).ToArray(),
                     ApiGrantNames = resources.ApiScopes.Select(x => x.DisplayName ?? x.Name).ToArray()
                 };
+#pragma warning restore CS8601 // Possível atribuição de referência nula.
 
                 list.Add(item);
             }

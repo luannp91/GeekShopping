@@ -1,3 +1,4 @@
+using IdentityServerHost.Quickstart.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

@@ -5,6 +5,7 @@ using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Validation;
 using Foo.Pages.Consent;
+using IdentityServerHost.Quickstart.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -21,7 +22,9 @@ public class Index : PageModel
     private readonly IOptions<IdentityServerOptions> _options;
     private readonly ILogger<Index> _logger;
 
+#pragma warning disable CS8618 // O campo não anulável precisa conter um valor não nulo ao sair do construtor. Considere declará-lo como anulável.
     public Index(
+#pragma warning restore CS8618 // O campo não anulável precisa conter um valor não nulo ao sair do construtor. Considere declará-lo como anulável.
         IDeviceFlowInteractionService interaction,
         IEventService eventService,
         IOptions<IdentityServerOptions> options,
@@ -33,7 +36,7 @@ public class Index : PageModel
         _logger = logger;
     }
 
-    public ViewModel View { get; set; }
+    public ViewModel? View { get; set; }
 
     [BindProperty]
     public InputModel Input { get; set; }
@@ -47,7 +50,9 @@ public class Index : PageModel
             return Page();
         }
 
+#pragma warning disable CS8601 // Possível atribuição de referência nula.
         View = await BuildViewModelAsync(userCode);
+#pragma warning restore CS8601 // Possível atribuição de referência nula.
         if (View == null)
         {
             ModelState.AddModelError("", DeviceOptions.InvalidUserCode);
@@ -68,7 +73,7 @@ public class Index : PageModel
         var request = await _interaction.GetAuthorizationContextAsync(Input.UserCode);
         if (request == null) return RedirectToPage("/Home/Error/Index");
 
-        ConsentResponse grantedConsent = null;
+        ConsentResponse? grantedConsent = null;
 
         // user clicked 'no' - send back the standard 'access_denied' response
         if (Input.Button == "no")
@@ -123,17 +128,21 @@ public class Index : PageModel
         }
 
         // we need to redisplay the consent UI
+#pragma warning disable CS8601 // Possível atribuição de referência nula.
         View = await BuildViewModelAsync(Input.UserCode, Input);
+#pragma warning restore CS8601 // Possível atribuição de referência nula.
         return Page();
     }
 
 
-    private async Task<ViewModel> BuildViewModelAsync(string userCode, InputModel model = null)
+    private async Task<ViewModel?> BuildViewModelAsync(string userCode, InputModel? model = null)
     {
         var request = await _interaction.GetAuthorizationContextAsync(userCode);
         if (request != null)
         {
+#pragma warning disable CS8604 // Possível argumento de referência nula.
             return CreateConsentViewModel(model, request);
+#pragma warning restore CS8604 // Possível argumento de referência nula.
         }
 
         return null;
@@ -141,6 +150,7 @@ public class Index : PageModel
 
     private ViewModel CreateConsentViewModel(InputModel model, DeviceFlowAuthorizationRequest request)
     {
+#pragma warning disable CS8601 // Possível atribuição de referência nula.
         var vm = new ViewModel
         {
             ClientName = request.Client.ClientName ?? request.Client.ClientId,
@@ -148,6 +158,7 @@ public class Index : PageModel
             ClientLogoUrl = request.Client.LogoUri,
             AllowRememberConsent = request.Client.AllowRememberConsent
         };
+#pragma warning restore CS8601 // Possível atribuição de referência nula.
 
         vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources.Select(x => CreateScopeViewModel(x, model == null || model.ScopesConsented?.Contains(x.Name) == true)).ToArray();
 
@@ -172,6 +183,7 @@ public class Index : PageModel
 
     private ScopeViewModel CreateScopeViewModel(IdentityResource identity, bool check)
     {
+#pragma warning disable CS8601 // Possível atribuição de referência nula.
         return new ScopeViewModel
         {
             Value = identity.Name,
@@ -181,10 +193,12 @@ public class Index : PageModel
             Required = identity.Required,
             Checked = check || identity.Required
         };
+#pragma warning restore CS8601 // Possível atribuição de referência nula.
     }
 
     public ScopeViewModel CreateScopeViewModel(ParsedScopeValue parsedScopeValue, ApiScope apiScope, bool check)
     {
+#pragma warning disable CS8601 // Possível atribuição de referência nula.
         return new ScopeViewModel
         {
             Value = parsedScopeValue.RawValue,
@@ -195,6 +209,7 @@ public class Index : PageModel
             Required = apiScope.Required,
             Checked = check || apiScope.Required
         };
+#pragma warning restore CS8601 // Possível atribuição de referência nula.
     }
 
     private ScopeViewModel GetOfflineAccessScope(bool check)
